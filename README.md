@@ -1,17 +1,20 @@
 <div align="center">
 
-<img src=".github/brand/cadencia-logo.png" alt="CadêncIA" width="360">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/brand/header-dark.svg">
+  <img src=".github/brand/header-light.svg" alt="CadêncIA" width="440">
+</picture>
 
 ### Extensão oficial para WordPress
 
 Liga o seu site à [CadêncIA](https://cadencia.soucluster.com.br), a plataforma de conteúdo da [Cluster](https://soucluster.com.br) que planeja, escreve e publica artigos otimizados para busca.
 
-[![versão](https://img.shields.io/github/v/release/clustermarketing/cadencia-plugin?label=vers%C3%A3o&color=d72323)](https://github.com/clustermarketing/cadencia-plugin/releases/latest)
-[![WordPress](https://img.shields.io/badge/WordPress-5.6%2B-d72323)](https://wordpress.org/)
-[![PHP](https://img.shields.io/badge/PHP-7.4%2B-d72323)](https://www.php.net/)
-[![licença](https://img.shields.io/badge/licen%C3%A7a-GPLv2%2B-d72323)](LICENSE)
+[![versão](https://img.shields.io/github/v/release/clustermarketing/cadencia-plugin?label=vers%C3%A3o&color=d72323&labelColor=1c1c1c)](https://github.com/clustermarketing/cadencia-plugin/releases/latest)
+[![WordPress](https://img.shields.io/badge/WordPress-5.6%2B-d72323?labelColor=1c1c1c)](https://wordpress.org/)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-d72323?labelColor=1c1c1c)](https://www.php.net/)
+[![licença](https://img.shields.io/badge/licen%C3%A7a-GPLv2%2B-d72323?labelColor=1c1c1c)](LICENSE)
 
-**[Baixar a versão mais recente](https://github.com/clustermarketing/cadencia-plugin/releases/latest/download/cadencia.zip)**
+[**⬇ Baixar a versão mais recente**](https://github.com/clustermarketing/cadencia-plugin/releases/latest/download/cadencia.zip)
 
 </div>
 
@@ -34,16 +37,12 @@ Ela não coleta dados e não chama serviços externos por conta própria: só ex
 
 Baixe o `cadencia.zip` da [release mais recente](https://github.com/clustermarketing/cadencia-plugin/releases/latest) e instale em **Plugins → Adicionar novo → Enviar plugin** no wp-admin. A extensão também está no diretório do WordPress.org.
 
-> **Vindo da versão 1.6.0 ou anterior?**
-> A pasta mudou de `seo-api-bridge` para `cadencia` na 1.7.0. As duas convivem sem quebrar o site, porque os identificadores internos são distintos, e a versão nova desativa a antiga sozinha no primeiro carregamento. Pode remover a antiga pelo wp-admin quando quiser.
+> [!NOTE]
+> **Vindo da versão 1.6.0 ou anterior?** A pasta mudou de `seo-api-bridge` para `cadencia` na 1.7.0. As duas convivem sem quebrar o site, porque os identificadores internos são distintos, e a versão nova desativa a antiga sozinha no primeiro carregamento. Pode remover a antiga pelo wp-admin quando quiser.
 
 ## Requisitos
 
 WordPress 5.6+ e PHP 7.4+. A plataforma autentica com uma Application Password de um usuário administrador.
-
-<div align="right">
-<img src=".github/brand/cadencio.webp" alt="Cadêncio, o mascote da CadêncIA" width="120">
-</div>
 
 ## Desenvolvimento
 
@@ -77,4 +76,6 @@ php -l cadencia.php
 
 ## Licença
 
-[GPLv2 ou posterior](LICENSE).
+[GPLv2 ou posterior](LICENSE), como exige qualquer extensão distribuída para WordPress.
+
+A licença cobre o **código**. "CadêncIA", "Cluster", o logotipo e os personagens da marca não são licenciados por ela: são marcas da Cluster, e usá-las para identificar um produto derivado precisa de autorização. Copiar, modificar e redistribuir o código é livre; passar-se pela CadêncIA não é.
