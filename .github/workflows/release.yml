@@ -1,0 +1,56 @@
+# Empacota a extensão e publica a release quando uma tag `v*` é criada.
+#
+# O zip precisa ter o plugin dentro de uma pasta `cadencia/`: é ela que vira o
+# nome do diretório em wp-content/plugins, e é o que identifica o plugin pro
+# WordPress. Zip com os arquivos na raiz instala numa pasta com o nome do
+# arquivo e vira outro plugin.
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Confere que a tag, o header do PHP e o manifest dizem a mesma versão
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          PHP_VERSION="$(grep -oP '^\s*\*\s*Version:\s*\K.+' cadencia.php | tr -d '[:space:]')"
+          MANIFEST_VERSION="$(python3 -c 'import json;print(json.load(open("plugin.manifest.json"))["version"])')"
+          echo "tag=$TAG php=$PHP_VERSION manifest=$MANIFEST_VERSION"
+          # Divergir aqui publicaria um zip cuja versão o WordPress e o painel da
+          # CadêncIA leriam diferente da tag, e o cliente ficaria com "atualização
+          # disponível" para sempre.
+          [ "$TAG" = "$PHP_VERSION" ] && [ "$TAG" = "$MANIFEST_VERSION" ]
+
+      - name: Sintaxe do PHP
+        run: php -l cadencia.php
+
+      - name: Empacota
+        run: |
+          set -euo pipefail
+          mkdir -p build/cadencia
+          # O manifest é metadado nosso, não faz parte do plugin.
+          rsync -a --exclude '.git*' --exclude 'build' --exclude 'README.md' \
+                --exclude 'plugin.manifest.json' ./ build/cadencia/
+          cd build && zip -rq ../cadencia.zip cadencia
+
+      - name: Publica a release e move a tag `latest`
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" cadencia.zip \
+            --title "$GITHUB_REF_NAME" \
+            --notes "Extensão Cadência para WordPress $GITHUB_REF_NAME. Instale pelo wp-admin em Plugins → Adicionar novo → Enviar plugin."
+          # `latest` é o alias estável pra quem quer sempre a versão corrente.
+          git tag -f latest
+          git push -f origin latest
