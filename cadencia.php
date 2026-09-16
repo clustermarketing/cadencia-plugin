@@ -408,7 +408,7 @@ function cadencia_ext_ai_summary_widget_styles() {
     letter-spacing: normal !important;
 }
 .cadencia-ai-summary-title {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     margin: 0 !important;
     color: #1f1f1f !important;
     font-family: inherit !important;
@@ -618,6 +618,9 @@ function cadencia_ext_preferred_source_url($article_url) {
     return add_query_arg('q', $origin, 'https://www.google.com/preferences/source');
 }
 
+// Textos em <div>, nunca <p>: plugins de "siga no Google"/anúncio injetam
+// antes/depois do primeiro <p> do conteúdo, e o widget é o primeiro bloco do
+// post. Com <p> a injeção caía dentro do flex e esmagava o título.
 function cadencia_ext_build_ai_summary_widget($article_url) {
     $prompt = rawurlencode('Resuma este artigo ' . $article_url);
     $services = [
@@ -662,7 +665,7 @@ function cadencia_ext_build_ai_summary_widget($article_url) {
     $preferred_source = '';
     if ($preferred_source_url !== '') {
         $preferred_source = sprintf(
-            '<div class="cadencia-ai-preferred-source"><div class="cadencia-ai-preferred-copy"><p class="cadencia-ai-preferred-title">%1$s</p><p class="cadencia-ai-preferred-description">%2$s</p></div><div class="cadencia-ai-preferred-action"><a class="cadencia-google-preferred-source-button" href="%3$s" target="_blank" rel="noopener noreferrer" aria-label="%4$s"><img src="%5$s" alt="" width="22" height="22" /><span>%6$s</span></a></div></div>',
+            '<div class="cadencia-ai-preferred-source"><div class="cadencia-ai-preferred-copy"><div class="cadencia-ai-preferred-title">%1$s</div><div class="cadencia-ai-preferred-description">%2$s</div></div><div class="cadencia-ai-preferred-action"><a class="cadencia-google-preferred-source-button" href="%3$s" target="_blank" rel="noopener noreferrer" aria-label="%4$s"><img src="%5$s" alt="" width="22" height="22" /><span>%6$s</span></a></div></div>',
             esc_html__('Quer ver mais deste site no Google?', 'cadencia'),
             esc_html__('Adicione este site às suas fontes preferidas.', 'cadencia'),
             esc_url($preferred_source_url),
@@ -673,7 +676,7 @@ function cadencia_ext_build_ai_summary_widget($article_url) {
     }
 
     return sprintf(
-        '<section class="cadencia-ai-summary-widget" aria-label="%1$s"><div class="cadencia-ai-summary-main"><p class="cadencia-ai-summary-title">%2$s</p><div class="cadencia-ai-summary-actions">%3$s</div></div>%4$s</section>',
+        '<section class="cadencia-ai-summary-widget" aria-label="%1$s"><div class="cadencia-ai-summary-main"><div class="cadencia-ai-summary-title">%2$s</div><div class="cadencia-ai-summary-actions">%3$s</div></div>%4$s</section>',
         esc_attr__('Resuma este artigo com IA', 'cadencia'),
         esc_html__('Resuma este artigo com IA', 'cadencia'),
         $buttons,
