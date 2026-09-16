@@ -4,7 +4,7 @@ Tags: seo, json-ld, schema, rank math, yoast
 Requires at least: 5.6
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,9 @@ No. The plugin does not collect or send data by itself. All writing happens thro
 3. In the CadêncIA panel, click "Verify installation".
 
 == Changelog ==
+
+= 1.7.1 =
+* The "Summarize with AI" widget no longer breaks when another plugin injects content before the first paragraph of the post.
 
 = 1.7.0 =
 * Plugin folder renamed to match the product name. Internal function names are now prefixed so the new folder can coexist with an older install without breaking the site; the previous copy is deactivated automatically on first load.

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Cadência
  * Description: Official CadêncIA integration: SEO fields (Rank Math and Yoast), safe JSON-LD schema, AI summary widget and article audio via REST API.
- * Version: 1.7.0
+ * Version: 1.7.1
  * Author: Cluster (soucluster.com.br)
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) exit;
 // (`cadencia_redirects`, `_cadencia_jsonld`, ...): é onde os dados vivem, e
 // renomeá-los faria esta versão ignorar tudo que a antiga gravou.
 
-const CADENCIA_EXT_VERSION = '1.7.0';
+const CADENCIA_EXT_VERSION = '1.7.1';
 const CADENCIA_EXT_JSONLD_META_KEY = '_cadencia_jsonld';
 const CADENCIA_EXT_AI_SUMMARY_WIDGET_OPTION = 'cadencia_ai_summary_widget_enabled';
 const CADENCIA_EXT_GOOGLE_SITE_VERIFICATION_OPTION = 'cadencia_google_site_verification';
