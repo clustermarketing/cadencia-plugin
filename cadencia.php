@@ -84,15 +84,74 @@ function cadencia_ext_normalize_faq_jsonld_item($item) {
     ];
 }
 
+// Teto de profundidade da malha: a da CadêncIA tem 4 ou 5 níveis; acima disso
+// é dado estranho, e cortar evita recursão sem fim num JSON montado de propósito.
+const CADENCIA_EXT_JSONLD_MAX_DEPTH = 8;
+
+/**
+ * Limpa um nó qualquer do schema: texto sem tag HTML, número e booleano como
+ * vieram, lista e objeto recursivos. Chave fica só se for nome de propriedade
+ * (letras, dígitos, `@`, `_`, `-`, `:`). A escrita no <head> já é JSON
+ * codificado, então isto é higiene de conteúdo, não a proteção contra script.
+ */
+function cadencia_ext_sanitize_jsonld_node($value, $depth = 0) {
+    if ($depth > CADENCIA_EXT_JSONLD_MAX_DEPTH) return null;
+    if (is_string($value)) return cadencia_ext_normalize_jsonld_text($value);
+    if (is_int($value) || is_float($value) || is_bool($value)) return $value;
+    if (!is_array($value)) return null;
+
+    $clean = [];
+    foreach ($value as $key => $child) {
+        if (is_string($key) && !preg_match('/^[@A-Za-z0-9_:\-]+$/', $key)) continue;
+        if (is_array($child) && isset($child['@type']) && $child['@type'] === 'FAQPage') {
+            $node = cadencia_ext_normalize_faq_jsonld_item($child);
+        } else {
+            $node = cadencia_ext_sanitize_jsonld_node($child, $depth + 1);
+        }
+        if ($node === null || $node === '' || $node === []) continue;
+        $clean[$key] = $node;
+    }
+    return $clean;
+}
+
+/**
+ * Malha da CadêncIA: `{ "@context": "https://schema.org", "@graph": [...] }`
+ * com o artigo, a imagem, o breadcrumb e o FAQPage. Até a 1.7.1 só o FAQPage
+ * solto passava aqui, e a malha inteira era descartada em silêncio: a meta
+ * ficava vazia e nenhum schema ia ao ar (BUG-229).
+ */
+function cadencia_ext_normalize_graph_jsonld_item($item) {
+    if (!cadencia_ext_is_assoc_array($item) || !isset($item['@graph']) || !is_array($item['@graph'])) {
+        return null;
+    }
+    $context = $item['@context'] ?? '';
+    if (!is_string($context) || !preg_match('#^https?://schema\.org/?$#', $context)) return null;
+
+    $graph = [];
+    foreach ($item['@graph'] as $node) {
+        if (!cadencia_ext_is_assoc_array($node) || empty($node['@type'])) continue;
+        $clean = ($node['@type'] === 'FAQPage')
+            ? cadencia_ext_normalize_faq_jsonld_item($node)
+            : cadencia_ext_sanitize_jsonld_node($node, 1);
+        if (is_array($clean) && $clean !== []) {
+            if ($node['@type'] === 'FAQPage') unset($clean['@context']);
+            $graph[] = $clean;
+        }
+    }
+    if ($graph === []) return null;
+
+    return ['@context' => 'https://schema.org', '@graph' => $graph];
+}
+
 function cadencia_ext_normalize_jsonld_items($decoded) {
     $items = cadencia_ext_is_assoc_array($decoded) ? [$decoded] : $decoded;
     if (!is_array($items)) return [];
 
     $normalized = [];
     foreach ($items as $item) {
-        $faq = cadencia_ext_normalize_faq_jsonld_item($item);
-        if ($faq !== null) {
-            $normalized[] = $faq;
+        $clean = cadencia_ext_normalize_faq_jsonld_item($item) ?? cadencia_ext_normalize_graph_jsonld_item($item);
+        if ($clean !== null) {
+            $normalized[] = $clean;
         }
     }
 
